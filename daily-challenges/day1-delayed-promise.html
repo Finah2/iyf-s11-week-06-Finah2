@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 1 — Delayed Promise</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Georgia, sans-serif; background: #1a1a2e; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+        h1 { color: #39ff14; font-size: 2rem; margin-bottom: 0.25rem; }
+        .subtitle { color: #555; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        p.desc { color: #aaa; margin-bottom: 2rem; line-height: 1.7; max-width: 450px; }
+        button { padding: 0.85rem 2rem; background: #39ff14; color: #1a1a2e; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-bottom: 1.5rem; }
+        button:hover { background: #28b30e; transform: translateY(-2px); }
+        button:disabled { background: #333; color: #555; cursor: not-allowed; transform: none; }
+        #log { background: #16213e; border-radius: 8px; padding: 1.5rem; width: 100%; max-width: 450px; text-align: left; min-height: 150px; font-family: monospace; font-size: 0.9rem; line-height: 2; }
+        .log-entry { color: #aaa; animation: fadeIn 0.3s ease; }
+        .log-entry.green { color: #39ff14; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <h1>Delayed Promise</h1>
+    <p class="subtitle">Day 1 — Week 6</p>
+    <p class="desc">A <code style="background:#16213e; padding:0.1rem 0.4rem; border-radius:3px;">delay(ms)</code> function that returns a Promise resolving after a set time. Watch the messages appear one by one with delays between them.</p>
+
+    <button id="run-btn" onclick="runDemo()">▶️ Run Demo</button>
+
+    <div id="log">
+        <p style="color:#333;">Click the button to start...</p>
+    </div>
+
+    <script>
+        // The delay function — returns a promise that resolves after ms milliseconds
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function addLog(message, isGreen = false) {
+            const log = document.getElementById("log");
+            if (log.querySelector("p[style]")) log.innerHTML = "";
+            const p = document.createElement("p");
+            p.className = `log-entry ${isGreen ? "green" : ""}`;
+            p.textContent = message;
+            log.appendChild(p);
+        }
+
+        async function runDemo() {
+            const btn = document.getElementById("run-btn");
+            btn.disabled = true;
+            document.getElementById("log").innerHTML = "";
+
+            addLog("🚀 Starting...");
+
+            await delay(1000);
+            addLog("⏳ 1 second passed...");
+
+            await delay(1000);
+            addLog("⏳ 2 seconds passed...");
+
+            await delay(1000);
+            addLog("✅ Done! 3 seconds total.", true);
+
+            await delay(500);
+            addLog("💡 delay() makes async code readable — no nested callbacks needed.", true);
+
+            btn.disabled = false;
+            btn.textContent = "▶️ Run Again";
+        }
+    </script>
+
+</body>
+</html>
