@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 2 — Promise Chain</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Georgia, sans-serif; background: #1a1a2e; color: #fff; min-height: 100vh; padding: 2rem; }
+        .wrapper { max-width: 550px; margin: 0 auto; text-align: center; }
+        h1 { color: #39ff14; font-size: 2rem; margin-bottom: 0.25rem; }
+        .subtitle { color: #555; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        p.desc { color: #aaa; margin-bottom: 2rem; line-height: 1.7; }
+        button { padding: 0.85rem 2rem; background: #39ff14; color: #1a1a2e; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; margin-bottom: 1.5rem; }
+        button:hover { background: #28b30e; transform: translateY(-2px); }
+        button:disabled { background: #333; color: #555; cursor: not-allowed; transform: none; }
+        .steps { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .step { background: #16213e; border-radius: 8px; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #333; transition: border-color 0.3s; }
+        .step.active { border-color: #f39c12; }
+        .step.done { border-color: #39ff14; }
+        .step-name { color: #aaa; font-size: 0.9rem; }
+        .step-time { font-family: monospace; font-size: 0.85rem; color: #555; }
+        .step.done .step-name { color: #39ff14; }
+        .step.done .step-time { color: #39ff14; }
+        #total { background: #16213e; border-radius: 8px; padding: 1rem; font-family: monospace; color: #39ff14; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h1>Promise Chain</h1>
+    <p class="subtitle">Day 2 — Week 6</p>
+    <p class="desc">Three promises chained together, each with a random delay. Watch them complete one by one and see the total execution time.</p>
+
+    <button id="run-btn" onclick="runChain()">▶️ Run Chain</button>
+
+    <div class="steps">
+        <div class="step" id="step1">
+            <span class="step-name">Step 1 — Fetch user data</span>
+            <span class="step-time" id="time1">waiting...</span>
+        </div>
+        <div class="step" id="step2">
+            <span class="step-name">Step 2 — Fetch user posts</span>
+            <span class="step-time" id="time2">waiting...</span>
+        </div>
+        <div class="step" id="step3">
+            <span class="step-name">Step 3 — Fetch comments</span>
+            <span class="step-time" id="time3">waiting...</span>
+        </div>
+    </div>
+
+    <div id="total" style="display:none;"></div>
+</div>
+
+<script>
+    function randomDelay(min = 500, max = 2000) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function fakeStep(name, ms) {
+        return new Promise(resolve => setTimeout(() => resolve({ name, ms }), ms));
+    }
+
+    async function runChain() {
+        const btn = document.getElementById("run-btn");
+        btn.disabled = true;
+
+        // Reset UI
+        ["step1", "step2", "step3"].forEach(id => {
+            document.getElementById(id).className = "step";
+        });
+        ["time1", "time2", "time3"].forEach(id => {
+            document.getElementById(id).textContent = "waiting...";
+        });
+        document.getElementById("total").style.display = "none";
+
+        const startTime = Date.now();
+
+        // Step 1
+        document.getElementById("step1").classList.add("active");
+        const d1 = randomDelay();
+        await fakeStep("user data", d1);
+        document.getElementById("step1").classList.remove("active");
+        document.getElementById("step1").classList.add("done");
+        document.getElementById("time1").textContent = `✓ ${d1}ms`;
+
+        // Step 2
+        document.getElementById("step2").classList.add("active");
+        const d2 = randomDelay();
+        await fakeStep("posts", d2);
+        document.getElementById("step2").classList.remove("active");
+        document.getElementById("step2").classList.add("done");
+        document.getElementById("time2").textContent = `✓ ${d2}ms`;
+
+        // Step 3
+        document.getElementById("step3").classList.add("active");
+        const d3 = randomDelay();
+        await fakeStep("comments", d3);
+        document.getElementById("step3").classList.remove("active");
+        document.getElementById("step3").classList.add("done");
+        document.getElementById("time3").textContent = `✓ ${d3}ms`;
+
+        const total = Date.now() - startTime;
+        const totalEl = document.getElementById("total");
+        totalEl.textContent = `⏱️ Total time: ${total}ms (${d1} + ${d2} + ${d3} = ${d1+d2+d3}ms)`;
+        totalEl.style.display = "block";
+
+        btn.disabled = false;
+        btn.textContent = "▶️ Run Again";
+    }
+</script>
+
+</body>
+</html>
